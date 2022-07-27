@@ -20,7 +20,7 @@
 		<button type="button" class="operator" value="tan">tan</button>
 		<button type="button" class="operator" value="/">&divide;</button>
 		<button type="button" class="operator" value="rad">&radic;</button>
-		<button type="button" class="operator" value="perc">&#37;</button>
+		<button type="button" class="operator" value="0.0">&#37;</button>
 		<button type="button" class="operator" value="exp">x<sup>2</sup></button>
 
 
@@ -41,7 +41,7 @@
 
 		<button type="button" class="decimal function" value=".">.</button>
 		<button type="button" value="0">0</button>
-		<button type="button" class="sign change" value=".">+/-</button>
+		<button type="button" class="sign change" value="+/-">+/-</button>
 
 
 
@@ -83,6 +83,22 @@ if (!calculator.displayValue.includes(dot)) {
 }
 }
 
+function inputPercent(dot) {
+if (calculator.waitingForSecondOperand === true) {
+	calculator.displayValue = "0.00"
+	calculator.waitingForSecondOperand = false;
+	return
+}
+
+if (!calculator.displayValue.includes(dot)) {
+	calculator.displayValue = dot + calculator.displayValue;
+}
+}
+
+function squared() {
+	calculator.displayValue = Math.pow(parseFloat(calculator.displayValue), 2).toString();
+}
+
 function handleOperator(nextOperator) {
 const { firstOperand, displayValue, operator } = calculator
 const inputValue = parseFloat(displayValue);
@@ -91,7 +107,6 @@ if (operator && calculator.waitingForSecondOperand)  {
 	calculator.operator = nextOperator;
 	return;
 }
-
 
 if (firstOperand == null && !isNaN(inputValue)) {
 	calculator.firstOperand = inputValue;
@@ -120,8 +135,23 @@ if (operator === '+') {
 return secondOperand;
 }
 
-function sine(value){
-	calculator.displayValue = Math.sin(value);
+function trig(operator) {
+	if (operator === 'sin') {
+		calculator.displayValue = Math.sin(parseFloat(calculator.displayValue)).toFixed(7).toString();
+	} else if (operator === 'cos') {
+		calculator.displayValue = Math.cos(parseFloat(calculator.displayValue)).toFixed(7).toString();
+	} else if(operator === 'tan'){
+		calculator.displayValue = Math.tan(parseFloat(calculator.displayValue)).toFixed(7).toString();
+	}
+
+}
+
+function root() {
+	calculator.displayValue = Math.sqrt(parseFloat(calculator.displayValue)).toString();
+}
+
+function change(){
+	calculator.displayValue = parseFloat(calculator.displayValue * -1).toString();
 }
 
 function resetCalculator() {
@@ -161,7 +191,25 @@ switch (value) {
 		resetCalculator();
 		break;
 	case 'sin':
-		sine(value);
+		trig(value);
+		break;
+	case 'cos':
+		trig(value);
+		break;
+	case 'tan':
+			trig(value);
+			break;
+	case '+/-':
+		change(value);
+		break;
+	case '0.0':
+		inputPercent(value);
+		break;
+	case 'exp':
+		squared();
+		break;
+	case 'rad':
+		root();
 		break;
 	default:
 		if (Number.isInteger(parseFloat(value))) {
